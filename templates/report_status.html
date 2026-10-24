@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Report Status - CardWapas{% endblock %}
 
+{% block navbar_nav %}
+<span class="badge bg-success bg-opacity-25 text-light border border-success border-opacity-50 small py-1.5 px-2.5">
+  <i class="bi bi-shield-lock me-1"></i>Anonymous Finder Portal
+</span>
+{% endblock %}
+
 {% block extra_head %}
 {# Only auto-refresh if the card has not yet been marked recovered #}
 {% if report.status != 'recovered' %}

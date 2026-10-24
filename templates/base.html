@@ -20,17 +20,19 @@
         <span>Card<span class="text-info">Wapas</span></span>
       </a>
       <div class="navbar-nav ms-auto flex-row align-items-center">
-        {% if current_user.is_authenticated %}
-          <span class="navbar-text me-3 d-none d-sm-inline-block small text-light">
-            <i class="bi bi-person-circle me-1"></i>{{ current_user.name }}
-          </span>
-          <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">
-            <i class="bi bi-box-arrow-right me-1"></i>Log out
-          </a>
-        {% else %}
-          <a class="nav-link px-2 me-2" href="{{ url_for('auth.login') }}">Log in</a>
-          <a class="btn btn-primary btn-sm px-3" href="{{ url_for('auth.register') }}">Register</a>
-        {% endif %}
+        {% block navbar_nav %}
+          {% if current_user.is_authenticated %}
+            <span class="navbar-text me-3 d-none d-sm-inline-block small text-light">
+              <i class="bi bi-person-circle me-1"></i>{{ current_user.name }}
+            </span>
+            <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">
+              <i class="bi bi-box-arrow-right me-1"></i>Log out
+            </a>
+          {% else %}
+            <a class="nav-link px-2 me-2" href="{{ url_for('auth.login') }}">Log in</a>
+            <a class="btn btn-primary btn-sm px-3" href="{{ url_for('auth.register') }}">Register</a>
+          {% endif %}
+        {% endblock %}
       </div>
     </div>
   </nav>
