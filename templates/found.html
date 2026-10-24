@@ -1,30 +1,147 @@
 {% extends "base.html" %}
-{% block title %}You found a card - CardWapas{% endblock %}
+{% block title %}Report a Found Card – CardWapas{% endblock %}
+
+{# Public page: never show owner name, email, or phone here. #}
+
+{% block navbar_nav %}
+<span class="badge rounded-1 small py-1 px-2"
+      style="background:#1E3A5F;color:#93C5FD;border:1px solid rgba(147,197,253,.3)">
+  <i class="bi bi-incognito me-1"></i>Anonymous Finder Portal
+</span>
+{% endblock %}
+
 {% block content %}
-{# PUBLIC PAGE: never show owner name, email, or phone here. OWNER: Person 3 (make it fast and mobile-friendly). #}
 <div class="narrow mx-auto">
-  <h2 class="mb-2">Thank you for finding this card!</h2>
-  <p class="text-muted">Tell the owner where you can hand it over. Your details stay private unless you choose to share them.</p>
 
-  <form method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <!-- Page header -->
+  <div class="text-center mb-4">
+    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+         style="width:52px;height:52px;background:#F0FDF4">
+      <i class="bi bi-credit-card-2-front fs-3 text-success"></i>
+    </div>
+    <h1 class="h5 fw-bold mb-1">Found a metro card?</h1>
+    <p class="text-muted small mb-0">
+      Help return it in under 30 seconds. No account required.
+    </p>
+  </div>
 
-    <div class="mb-3"><label class="form-label">Where can you meet the owner?</label>
-      <select class="form-select" name="meetup_point" required>
-        <option value="" disabled selected>Choose a public place</option>
-        {% for p in meetup_points %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
-      </select></div>
+  <!-- Privacy reassurance (compact) -->
+  <div class="privacy-notice d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-shield-check text-success flex-shrink-0"></i>
+    <span>The card owner's name, email, and phone will not be revealed to you.</span>
+  </div>
 
-    <div class="mb-3"><label class="form-label">Note (optional)</label>
-      <input class="form-control" name="meetup_note" maxlength="200" placeholder="e.g. I'm here until 4 PM"></div>
+  <!-- Report form -->
+  <div class="cw-card p-3 p-sm-4">
+    <form method="post" id="foundCardForm" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <div class="mb-3"><label class="form-label">Message to owner (optional)</label>
-      <textarea class="form-control" name="message" rows="2" maxlength="500"></textarea></div>
+      <!-- 1. Meetup location (required) -->
+      <div class="mb-3">
+        <label for="meetup_point" class="form-label">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i>Where can you hand it over?
+        </label>
+        <select class="form-select form-select-lg" id="meetup_point" name="meetup_point" required>
+          <option value="" disabled selected>Select a safe public location...</option>
+          {% for p in meetup_points %}
+            <option value="{{ p }}">{{ p }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Choose a safe, public spot near where you found the card.</div>
+      </div>
 
-    <div class="mb-3"><label class="form-label">Your contact (optional)</label>
-      <input class="form-control" name="finder_contact" maxlength="120" placeholder="Only if you are comfortable sharing"></div>
+      <!-- 2. Timing note -->
+      <div class="mb-3">
+        <label for="meetup_note" class="form-label">
+          <i class="bi bi-clock me-1 text-secondary"></i>Timing or extra detail
+          <span class="text-muted fw-normal">(optional)</span>
+        </label>
+        <input class="form-control" id="meetup_note" name="meetup_note" maxlength="200"
+               placeholder="e.g. Left with platform security until 5 PM">
+      </div>
 
-    <button class="btn btn-primary w-100">Notify the owner</button>
-  </form>
+      <!-- 3. Optional extras: message, contact, GPS (collapsed to save scroll) -->
+      <div class="accordion mb-4" id="extraAccordion">
+        <div class="accordion-item" style="border:1px solid var(--cw-border);border-radius:var(--cw-r-md)">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed py-2 px-3 small fw-semibold text-secondary bg-transparent"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#extraPanel" aria-expanded="false" aria-controls="extraPanel"
+                    style="border-radius:var(--cw-r-md)">
+              <i class="bi bi-plus-circle me-2 text-primary"></i>Add optional message, contact, or location
+            </button>
+          </h2>
+          <div id="extraPanel" class="accordion-collapse collapse">
+            <div class="accordion-body pt-2 px-3 pb-3">
+
+              <!-- Message -->
+              <div class="mb-3">
+                <label for="message" class="form-label small">Message to the card owner</label>
+                <textarea class="form-control form-control-sm" id="message" name="message"
+                          rows="2" maxlength="500"
+                          placeholder="Any helpful detail about the card or where you found it..."></textarea>
+              </div>
+
+              <!-- Finder contact (voluntary) -->
+              <div class="mb-3">
+                <label for="finder_contact" class="form-label small">Your contact info</label>
+                <input class="form-control form-control-sm" id="finder_contact" name="finder_contact"
+                       maxlength="120" placeholder="Phone or WhatsApp, only if you are comfortable sharing">
+              </div>
+
+              <!-- GPS coordinates -->
+              <div>
+                <input type="hidden" name="latitude"  id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                        id="btnGps" onclick="captureLocation()">
+                  <i class="bi bi-geo-alt me-1"></i>
+                  <span id="gpsLabel">Attach current GPS coordinates</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-success btn-lg w-100 touch-target-lg">
+        <i class="bi bi-send-fill me-2"></i>Notify card owner
+      </button>
+
+    </form>
+  </div><!-- /cw-card -->
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /* Geolocation capture — no-library, graceful failure */
+  function captureLocation() {
+    var btn   = document.getElementById('btnGps');
+    var label = document.getElementById('gpsLabel');
+    if (!navigator.geolocation) {
+      label.textContent = 'Geolocation not supported by this browser.';
+      return;
+    }
+    label.textContent = 'Acquiring coordinates...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        document.getElementById('latitude').value  = pos.coords.latitude.toFixed(6);
+        document.getElementById('longitude').value = pos.coords.longitude.toFixed(6);
+        label.textContent = 'Coordinates attached';
+        btn.classList.replace('btn-outline-secondary', 'btn-outline-success');
+        btn.disabled = false;
+      },
+      function() {
+        label.textContent = 'Location unavailable or denied.';
+        btn.disabled = false;
+      },
+      { timeout: 8000, maximumAge: 60000 }
+    );
+  }
+</script>
 {% endblock %}

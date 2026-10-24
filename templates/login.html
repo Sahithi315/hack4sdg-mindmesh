@@ -1,16 +1,107 @@
 {% extends "base.html" %}
-{% block title %}Log in - CardWapas{% endblock %}
+{% block title %}Log in – CardWapas{% endblock %}
+
 {% block content %}
-<div class="narrow mx-auto">
-  <h2 class="mb-3">Log in</h2>
-  <form method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="mb-3"><label class="form-label">Email</label>
-      <input class="form-control" type="email" name="email" required></div>
-    <div class="mb-3"><label class="form-label">Password</label>
-      <input class="form-control" type="password" name="password" required></div>
-    <button class="btn btn-primary w-100">Log in</button>
-  </form>
-  <p class="mt-3">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+<div class="row g-5 align-items-center justify-content-center py-2 py-md-5">
+
+  <!-- ============================================================
+       LEFT COLUMN: What is CardWapas?
+       ============================================================ -->
+  <div class="col-12 col-lg-6">
+    <div class="pe-lg-4">
+
+      <!-- Brand heading -->
+      <h1 class="fw-bold mb-2" style="font-size:2rem;color:var(--cw-navy)">
+        CardWapas
+      </h1>
+      <p class="mb-4" style="font-size:1.05rem;color:var(--cw-text-muted);max-width:420px">
+        Return lost metro cards without exposing your private contact details.
+      </p>
+
+      <!-- How it works: three numbered steps -->
+      <div class="mb-4 d-flex flex-column gap-3">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">Register and get a QR sticker</div>
+            <div class="text-muted" style="font-size:.83rem">Create an account, add your metro card, and download a unique QR code to print and stick on your card.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">A finder scans it</div>
+            <div class="text-muted" style="font-size:.83rem">Anyone who finds your card scans the QR with their phone camera. No app or sign-up required.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">Coordinate a safe meetup</div>
+            <div class="text-muted" style="font-size:.83rem">The finder suggests a public meetup point. You receive an email alert. Your phone number stays private throughout.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy assurance line -->
+      <div class="privacy-notice d-flex align-items-center gap-2">
+        <i class="bi bi-shield-check fs-5 text-success flex-shrink-0"></i>
+        <span>Your name, email, and phone are never shown to finders or encoded in the QR code.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RIGHT COLUMN: Login form
+       ============================================================ -->
+  <div class="col-12 col-lg-5" style="max-width:420px">
+    <div class="cw-card p-4">
+      <div class="text-center mb-4">
+        <h2 class="h5 fw-bold mb-1">Sign in to CardWapas</h2>
+        <p class="text-muted small mb-0">Manage your cards and found reports</p>
+      </div>
+
+      <form method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input class="form-control form-control-lg" type="email" id="email" name="email"
+                   placeholder="you@example.com" required autocomplete="email" autofocus>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input class="form-control form-control-lg" type="password" id="password" name="password"
+                   placeholder="Your password" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 touch-target-lg">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Log in
+        </button>
+      </form>
+
+      <div class="text-center mt-4 pt-3 border-top">
+        <p class="text-muted small mb-1">
+          New to CardWapas?
+          <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none" style="color:var(--cw-blue)">Create an account</a>
+        </p>
+        <p class="text-muted" style="font-size:.78rem;margin-bottom:0">
+          By signing in you agree to our
+          <a href="/terms" class="text-muted text-decoration-underline">Terms</a>
+          and
+          <a href="/privacy" class="text-muted text-decoration-underline">Privacy Policy</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

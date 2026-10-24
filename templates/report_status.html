@@ -1,18 +1,142 @@
 {% extends "base.html" %}
-{% block title %}Report status - CardWapas{% endblock %}
+{% block title %}Report Status – CardWapas{% endblock %}
+
+{# Public page: never show owner name, email, or phone here. #}
+
+{% block navbar_nav %}
+<span class="badge rounded-1 small py-1 px-2"
+      style="background:#1E3A5F;color:#93C5FD;border:1px solid rgba(147,197,253,.3)">
+  <i class="bi bi-incognito me-1"></i>Anonymous Finder Portal
+</span>
+{% endblock %}
+
+{% block extra_head %}
+{# Auto-refresh only while the card has not been recovered yet #}
+{% if report.status != 'recovered' %}
+<meta http-equiv="refresh" content="30">
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="narrow mx-auto">
-  <h2 class="mb-3">Thank you!</h2>
-  <p>The owner has been notified. Keep this page open or bookmark it to see their reply.</p>
 
-  <div class="card"><div class="card-body">
-    <p class="mb-1"><strong>Your suggested meetup:</strong> {{ report.meetup_point }}</p>
-    <p class="mb-1"><strong>Status:</strong>
-      {% if report.status == 'recovered' %}Card returned. Thank you!
-      {% elif report.status == 'owner_replied' %}The owner replied
-      {% else %}Waiting for the owner{% endif %}</p>
-    {% if report.owner_reply %}<p class="mb-0"><strong>Owner says:</strong> {{ report.owner_reply }}</p>{% endif %}
-  </div></div>
-  {# TODO (Person 3): auto-refresh this page every ~30s so the finder sees replies without reloading. #}
+  <!-- Status icon + heading -->
+  <div class="text-center mb-4">
+    {% if report.status == 'recovered' %}
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:#F0FDF4">
+        <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+      </div>
+      <h1 class="h5 fw-bold text-success mb-1">Card returned!</h1>
+      <p class="text-muted small mb-0">You successfully helped reunite a metro card with its owner.</p>
+    {% elif report.status == 'owner_replied' %}
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:var(--cw-blue-light)">
+        <i class="bi bi-chat-dots-fill fs-2" style="color:var(--cw-blue)"></i>
+      </div>
+      <h1 class="h5 fw-bold mb-1" style="color:var(--cw-blue)">The owner has replied</h1>
+      <p class="text-muted small mb-0">See their message and meetup confirmation below.</p>
+    {% else %}
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:#FFFBEB">
+        <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+      </div>
+      <h1 class="h5 fw-bold mb-1">Waiting for the owner</h1>
+      <p class="text-muted small mb-0">The owner has been notified by email. This page refreshes automatically.</p>
+    {% endif %}
+  </div>
+
+  <!-- Status detail card -->
+  <div class="cw-card p-3 p-sm-4 mb-3">
+
+    <!-- Status badge row -->
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+      <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.04em">Status</span>
+      {% if report.status == 'recovered' %}
+        <span class="cw-badge cw-badge-recovered">
+          <i class="bi bi-check2-all"></i> Recovered
+        </span>
+      {% elif report.status == 'owner_replied' %}
+        <span class="cw-badge cw-badge-replied">
+          <i class="bi bi-reply-fill"></i> Owner replied
+        </span>
+      {% else %}
+        <span class="cw-badge cw-badge-new">
+          <i class="bi bi-clock-history"></i> Waiting
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Your suggested meetup -->
+    <div class="mb-3">
+      <div class="text-muted small fw-semibold mb-1">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i>Your suggested meetup
+      </div>
+      <div class="fw-bold text-dark">{{ report.meetup_point }}</div>
+      {% if report.meetup_note %}
+        <div class="text-secondary small mt-1">
+          <i class="bi bi-card-text me-1"></i>{{ report.meetup_note }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Owner's reply (prominent) -->
+    {% if report.owner_reply %}
+      <div class="p-3 rounded-2 mb-1" style="background:var(--cw-blue-light);border:1px solid #BFDBFE">
+        <div class="fw-semibold small mb-1" style="color:var(--cw-blue)">
+          <i class="bi bi-chat-quote-fill me-1"></i>Message from the card owner:
+        </div>
+        <p class="mb-0 fw-semibold text-dark">{{ report.owner_reply }}</p>
+      </div>
+    {% elif report.status != 'recovered' %}
+      <div class="text-center py-3 text-muted small" style="background:var(--cw-bg);border-radius:var(--cw-r-md)">
+        <i class="bi bi-arrow-repeat me-1"></i>Waiting for the owner to reply...
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Auto-refresh countdown (only shown while waiting) -->
+  {% if report.status != 'recovered' %}
+    <div class="cw-card p-3 text-center mb-3">
+      <p class="text-muted small mb-2">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Page refreshes in <strong id="countdown" class="text-dark">30</strong> seconds
+      </p>
+      <button type="button" class="btn btn-outline-primary btn-sm px-4"
+              onclick="window.location.reload()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh now
+      </button>
+    </div>
+  {% endif %}
+
+  <!-- Privacy reminder -->
+  <div class="privacy-notice d-flex align-items-center gap-2">
+    <i class="bi bi-shield-check text-success flex-shrink-0"></i>
+    <span>No personal phone numbers or email addresses were shared with you during this process.</span>
+  </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if report.status != 'recovered' %}
+<script>
+  /* Countdown alongside the <meta http-equiv="refresh"> tag */
+  (function() {
+    var n = 30;
+    var el = document.getElementById('countdown');
+    if (!el) return;
+    var t = setInterval(function() {
+      n -= 1;
+      if (n <= 0) {
+        clearInterval(t);
+        window.location.reload();
+      } else {
+        el.textContent = n;
+      }
+    }, 1000);
+  })();
+</script>
+{% endif %}
 {% endblock %}

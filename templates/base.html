@@ -3,33 +3,99 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}CardWapas{% endblock %}</title>
+  <meta name="description" content="CardWapas – QR-based metro card recovery without exposing your private details.">
+  <title>{% block title %}CardWapas – Metro Card Recovery{% endblock %}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- CardWapas design system -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
-  <nav class="navbar navbar-expand navbar-dark bg-dark mb-4">
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style="border-bottom:1px solid rgba(255,255,255,.08)">
     <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">CardWapas</a>
-      <div class="navbar-nav ms-auto">
-        {% if current_user.is_authenticated %}
-          <span class="navbar-text me-3">{{ current_user.name }}</span>
-          <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-        {% else %}
-          <a class="nav-link" href="{{ url_for('auth.login') }}">Log in</a>
-          <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
-        {% endif %}
+      <!-- Brand -->
+      <a class="navbar-brand d-flex align-items-center fw-bold gap-2" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='favicon.svg') }}" width="24" height="24" alt="CardWapas logo">
+        Card<span style="color:#60A5FA">Wapas</span>
+      </a>
+
+      <!-- Nav items (right side) -->
+      <div class="navbar-nav ms-auto flex-row align-items-center gap-2">
+        {% block navbar_nav %}
+          {% if current_user.is_authenticated %}
+            <span class="navbar-text d-none d-sm-inline-block small text-secondary me-1">
+              <i class="bi bi-person-circle me-1"></i>{{ current_user.name }}
+            </span>
+            <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">
+              <i class="bi bi-box-arrow-right me-1"></i>Log out
+            </a>
+          {% else %}
+            <a class="nav-link px-2 text-secondary" href="{{ url_for('auth.login') }}">Log in</a>
+            <a class="btn btn-primary btn-sm px-3" href="{{ url_for('auth.register') }}">Register</a>
+          {% endif %}
+        {% endblock %}
       </div>
     </div>
   </nav>
 
-  <main class="container pb-5">
+  <!-- ============================================================
+       FLASH MESSAGES
+       ============================================================ -->
+  <div class="container pt-3">
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-      {% endfor %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show py-2" role="alert">
+            <i class="bi bi-{{ 'check-circle' if category == 'success' else ('exclamation-triangle' if category == 'warning' else ('x-circle' if category == 'danger' else 'info-circle')) }} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
     {% endwith %}
+  </div>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="container py-4 flex-grow-1">
     {% block content %}{% endblock %}
   </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="cw-footer mt-auto">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span class="fw-semibold" style="color:#374151">
+          CardWapas &copy; 2026
+        </span>
+        <nav aria-label="Footer navigation" class="d-flex flex-wrap gap-3">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
+        </nav>
+        <span class="text-muted" style="font-size:.78rem">
+          <i class="bi bi-recycle text-success me-1"></i>Supporting UN SDG 12
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
