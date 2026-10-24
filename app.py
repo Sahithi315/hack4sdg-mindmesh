@@ -5,6 +5,7 @@ Deploy:        gunicorn "app:create_app()"
 """
 from flask import Flask, redirect, url_for
 from flask_login import current_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 from extensions import db, login_manager, limiter, csrf
@@ -12,6 +13,12 @@ from extensions import db, login_manager, limiter, csrf
 
 def create_app():
     app = Flask(__name__)
+
+    # Render puts the app behind a proxy. ProxyFix makes Flask see the real visitor's
+    # IP address and the https scheme. Without it, the rate limiter would treat every
+    # visitor as the same person and block everyone after a few requests.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
     app.config.from_object(Config)
 
     db.init_app(app)
@@ -38,6 +45,7 @@ def create_app():
 
     @app.route("/healthz")
     def healthz():
+        # Used by Render to check the app is alive. Does not touch the database.
         return "ok", 200
 
     with app.app_context():
