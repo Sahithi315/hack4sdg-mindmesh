@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy – CardWapas{% endblock %}
+
+{% block content %}
+<div class="narrow mx-auto py-4 legal-page">
+
+  <h1 class="h4 fw-bold mb-1">Privacy Policy</h1>
+  <p class="text-muted small mb-4">Effective date: 25 October 2026</p>
+
+  <p>
+    This policy describes how CardWapas collects, uses, and protects information when you
+    register an account, add a metro card, or report a found card. Read it carefully before
+    using the service.
+  </p>
+
+  <p class="text-muted small">
+    <strong>Note:</strong> CardWapas is a student hackathon project. This policy describes
+    the actual implementation and is not a lawyer-reviewed document.
+    If you have questions, contact the team at the address listed at the bottom.
+  </p>
+
+  <h2>1. Information we collect</h2>
+
+  <p><strong>Account registration (card owners only)</strong></p>
+  <ul>
+    <li>Full name</li>
+    <li>Email address (used to send found-card alerts)</li>
+    <li>Phone number (optional, stored but never shown to finders or encoded in QR codes)</li>
+    <li>Hashed password (we never store your password in plain text)</li>
+  </ul>
+
+  <p><strong>Card records</strong></p>
+  <ul>
+    <li>A short label you choose for each card (e.g. "Blue Line Card")</li>
+    <li>A randomly generated recovery token, which is embedded in the QR code URL</li>
+    <li>Card status (active, lost, or recovered)</li>
+    <li>Date and time the card was registered</li>
+  </ul>
+
+  <p><strong>Found reports (submitted by finders)</strong></p>
+  <ul>
+    <li>Proposed meetup location (chosen from a preset list)</li>
+    <li>Optional timing note</li>
+    <li>Optional message to the card owner</li>
+    <li>Optional contact information voluntarily provided by the finder</li>
+    <li>Optional GPS coordinates, if the finder chooses to share them</li>
+    <li>A randomly generated report token used to give the finder a private status link</li>
+  </ul>
+
+  <h2>2. How we use your information</h2>
+  <ul>
+    <li>To send you an email when a finder reports your card found.</li>
+    <li>To display found reports on your owner dashboard so you can coordinate a meetup.</li>
+    <li>To allow the finder to check the status of their report through a private, unguessable link.</li>
+    <li>To show accurate statistics (card count, report count, recovery count) on your dashboard.</li>
+  </ul>
+
+  <h2>3. What finders can and cannot see</h2>
+  <p>The public finder page (<code>/found/&lt;token&gt;</code>) and the report status page
+     (<code>/report/&lt;token&gt;</code>) are designed so that:</p>
+  <ul>
+    <li>Finders are <strong>never</strong> shown the owner's name, email address, or phone number.</li>
+    <li>The QR code URL contains only a random token. It does not reveal any personal details.</li>
+    <li>Finders can see the owner's reply message if the owner chooses to send one.</li>
+  </ul>
+
+  <h2>4. Email notifications</h2>
+  <p>
+    When a finder submits a report, the application sends an email to the registered owner.
+    Email delivery uses SMTP (configured via environment variables). If no mail credentials are
+    configured in the deployment environment, notification emails are printed to the server
+    console only and are not delivered.
+  </p>
+  <p>
+    We do not use any third-party email marketing service. Emails are sent only as a direct
+    result of a found-card report.
+  </p>
+
+  <h2>5. Data storage and security</h2>
+  <ul>
+    <li>Data is stored in a SQLite database on the hosting server.</li>
+    <li>Passwords are hashed using Werkzeug's <code>generate_password_hash</code> function.</li>
+    <li>All POST forms are protected with a CSRF token.</li>
+    <li>HTTPS is recommended and should be enforced in production via the hosting provider.</li>
+    <li>
+      <strong>Limitation:</strong> As a hackathon prototype, this application has not undergone
+      a formal security audit. Do not store sensitive personal information beyond what is
+      required for card recovery.
+    </li>
+  </ul>
+
+  <h2>6. Data retention and deletion</h2>
+  <p>
+    Card owners can delete their cards and all associated found reports at any time from the
+    dashboard. Account deletion is not currently implemented in the interface; contact the team
+    if you need your account removed.
+  </p>
+  <p>
+    <em>The team should confirm and document a specific retention period here before a
+    public launch.</em>
+  </p>
+
+  <h2>7. Third-party services</h2>
+  <ul>
+    <li>
+      <strong>Bootstrap and Bootstrap Icons</strong> are loaded from the jsDelivr CDN. Your
+      browser will connect to jsDelivr's servers to download these assets.
+    </li>
+    <li>
+      If GPS coordinates are shared and the owner views the map link, the browser connects
+      to OpenStreetMap to display the location.
+    </li>
+    <li>No advertising, analytics, or social-media tracking scripts are used.</li>
+  </ul>
+
+  <h2>8. Your rights</h2>
+  <p>
+    You may request access to, correction of, or deletion of your personal data by contacting
+    the team using the details below. We will respond within a reasonable timeframe.
+  </p>
+
+  <h2>9. Contact</h2>
+  <p>
+    <em>The team should insert a real contact email or support link here before a public launch.</em>
+  </p>
+  <p>
+    CardWapas is a student project submitted for the hack4sdg hackathon.
+  </p>
+
+</div>
+{% endblock %}
