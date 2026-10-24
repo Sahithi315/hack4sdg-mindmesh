@@ -149,6 +149,24 @@
               </button>
             {% endif %}
           </form>
+
+          <!-- Card Management: Regenerate Token & Delete Card -->
+          <div class="d-flex gap-2 pt-1">
+            <form method="post" action="{{ url_for('cards.regenerate_card_token', card_id=card.id) }}" class="flex-fill"
+                  onsubmit="return confirm('Regenerate QR code? The current printed QR sticker will permanently stop working.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-light btn-sm text-secondary border w-100" title="Generate new QR if misprinted or compromised">
+                <i class="bi bi-arrow-repeat text-warning me-1"></i> Regenerate
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('cards.delete_card', card_id=card.id) }}" class="flex-fill"
+                  onsubmit="return confirm('Delete this card and all its reports? This action cannot be undone.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-light btn-sm text-danger border w-100" title="Delete card permanently">
+                <i class="bi bi-trash3 me-1"></i> Delete
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -214,6 +232,14 @@
               {% if r.meetup_note %}
                 <div class="text-secondary small mt-1">
                   <i class="bi bi-info-circle me-1"></i>Note: {{ r.meetup_note }}
+                </div>
+              {% endif %}
+              {% if r.latitude and r.longitude %}
+                <div class="mt-2 pt-1 border-top border-secondary border-opacity-25 small">
+                  <a href="https://www.openstreetmap.org/?mlat={{ r.latitude }}&mlon={{ r.longitude }}#map=16/{{ r.latitude }}/{{ r.longitude }}"
+                     target="_blank" rel="noopener noreferrer" class="badge bg-white text-primary border text-decoration-none">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>View Location on OpenStreetMap
+                  </a>
                 </div>
               {% endif %}
             </div>

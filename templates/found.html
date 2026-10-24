@@ -57,7 +57,7 @@
           <h2 class="accordion-header" id="headingExtra">
             <button class="accordion-button collapsed py-2 px-3 bg-light text-secondary small rounded-3" type="button"
                     data-bs-toggle="collapse" data-bs-target="#collapseExtra" aria-expanded="false" aria-controls="collapseExtra">
-              <i class="bi bi-plus-circle me-1 text-primary"></i> Optional: Add message or your contact
+              <i class="bi bi-plus-circle me-1 text-primary"></i> Optional: Add message, contact, or location
             </button>
           </h2>
           <div id="collapseExtra" class="accordion-collapse collapse" aria-labelledby="headingExtra" data-bs-parent="#optionalDetailsAccordion">
@@ -67,10 +67,18 @@
                 <textarea class="form-control form-control-sm" id="message" name="message" rows="2" maxlength="500"
                           placeholder="Any distinguishing detail or friendly note..."></textarea>
               </div>
-              <div>
+              <div class="mb-2">
                 <label for="finder_contact" class="form-label small fw-semibold text-secondary">Your contact info</label>
                 <input class="form-control form-control-sm" id="finder_contact" name="finder_contact" maxlength="120"
                        placeholder="WhatsApp/phone (only if comfortable sharing)">
+              </div>
+              <!-- Optional Geolocation Pin -->
+              <div class="pt-1">
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100" id="btnShareLocation" onclick="captureLocation()">
+                  <i class="bi bi-geo-alt me-1"></i> <span id="locLabel">Attach current GPS coordinates</span>
+                </button>
               </div>
             </div>
           </div>
@@ -92,4 +100,33 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function captureLocation() {
+    const btn = document.getElementById('btnShareLocation');
+    const label = document.getElementById('locLabel');
+    if (!navigator.geolocation) {
+      label.textContent = 'Geolocation not supported by browser';
+      return;
+    }
+    label.textContent = 'Acquiring GPS location...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        document.getElementById('latitude').value = pos.coords.latitude.toFixed(6);
+        document.getElementById('longitude').value = pos.coords.longitude.toFixed(6);
+        label.textContent = 'Location coordinates attached';
+        btn.className = 'btn btn-outline-success btn-sm w-100';
+        btn.disabled = false;
+      },
+      function(err) {
+        label.textContent = 'Location unavailable or denied';
+        btn.disabled = false;
+      },
+      { timeout: 8000, maximumAge: 60000 }
+    );
+  }
+</script>
 {% endblock %}
