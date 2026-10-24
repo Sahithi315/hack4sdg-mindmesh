@@ -1,110 +1,119 @@
 {% extends "base.html" %}
-{% block title %}Report Status - CardWapas{% endblock %}
+{% block title %}Report Status – CardWapas{% endblock %}
+
+{# Public page: never show owner name, email, or phone here. #}
 
 {% block navbar_nav %}
-<span class="badge bg-success bg-opacity-25 text-light border border-success border-opacity-50 small py-1.5 px-2.5">
-  <i class="bi bi-shield-lock me-1"></i>Anonymous Finder Portal
+<span class="badge rounded-1 small py-1 px-2"
+      style="background:#1E3A5F;color:#93C5FD;border:1px solid rgba(147,197,253,.3)">
+  <i class="bi bi-incognito me-1"></i>Anonymous Finder Portal
 </span>
 {% endblock %}
 
 {% block extra_head %}
-{# Only auto-refresh if the card has not yet been marked recovered #}
+{# Auto-refresh only while the card has not been recovered yet #}
 {% if report.status != 'recovered' %}
 <meta http-equiv="refresh" content="30">
 {% endif %}
 {% endblock %}
 
 {% block content %}
-{# PUBLIC PAGE: never show owner name, email, or phone here. OWNER: Person 3. #}
 <div class="narrow mx-auto">
 
-  <!-- Header Card -->
-  <div class="text-center mb-3">
+  <!-- Status icon + heading -->
+  <div class="text-center mb-4">
     {% if report.status == 'recovered' %}
-      <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-2" style="width: 60px; height: 60px;">
-        <i class="bi bi-check-circle-fill fs-1"></i>
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:#F0FDF4">
+        <i class="bi bi-check-circle-fill fs-2 text-success"></i>
       </div>
-      <h2 class="h4 fw-bold text-success mb-1">Card Returned!</h2>
-      <p class="text-muted small">You successfully reunited a metro card with its owner.</p>
+      <h1 class="h5 fw-bold text-success mb-1">Card returned!</h1>
+      <p class="text-muted small mb-0">You successfully helped reunite a metro card with its owner.</p>
     {% elif report.status == 'owner_replied' %}
-      <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-2" style="width: 60px; height: 60px;">
-        <i class="bi bi-chat-dots-fill fs-2"></i>
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:var(--cw-blue-light)">
+        <i class="bi bi-chat-dots-fill fs-2" style="color:var(--cw-blue)"></i>
       </div>
-      <h2 class="h4 fw-bold text-primary mb-1">The Owner Replied!</h2>
-      <p class="text-muted small">See the meetup details from the owner below.</p>
+      <h1 class="h5 fw-bold mb-1" style="color:var(--cw-blue)">The owner has replied</h1>
+      <p class="text-muted small mb-0">See their message and meetup confirmation below.</p>
     {% else %}
-      <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-2" style="width: 60px; height: 60px;">
-        <i class="bi bi-hourglass-split fs-2"></i>
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+           style="width:56px;height:56px;background:#FFFBEB">
+        <i class="bi bi-hourglass-split fs-2 text-warning"></i>
       </div>
-      <h2 class="h4 fw-bold mb-1">Waiting for Owner's Reply</h2>
-      <p class="text-muted small">The owner has been notified via email. Keep this page open or bookmark it.</p>
+      <h1 class="h5 fw-bold mb-1">Waiting for the owner</h1>
+      <p class="text-muted small mb-0">The owner has been notified by email. This page refreshes automatically.</p>
     {% endif %}
   </div>
 
-  <!-- Status Card -->
-  <div class="cw-card p-3 p-sm-4 shadow-sm mb-3">
+  <!-- Status detail card -->
+  <div class="cw-card p-3 p-sm-4 mb-3">
+
+    <!-- Status badge row -->
     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-      <span class="text-muted small text-uppercase fw-bold">Current Status</span>
+      <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.04em">Status</span>
       {% if report.status == 'recovered' %}
-        <span class="badge bg-success badge-pill-status"><i class="bi bi-check2-all me-1"></i>Recovered</span>
+        <span class="cw-badge cw-badge-recovered">
+          <i class="bi bi-check2-all"></i> Recovered
+        </span>
       {% elif report.status == 'owner_replied' %}
-        <span class="badge bg-primary badge-pill-status"><i class="bi bi-reply-fill me-1"></i>Owner Replied</span>
+        <span class="cw-badge cw-badge-replied">
+          <i class="bi bi-reply-fill"></i> Owner replied
+        </span>
       {% else %}
-        <span class="badge bg-warning text-dark badge-pill-status"><i class="bi bi-clock-history me-1"></i>Waiting for Reply</span>
+        <span class="cw-badge cw-badge-new">
+          <i class="bi bi-clock-history"></i> Waiting
+        </span>
       {% endif %}
     </div>
 
-    <!-- Suggested meetup -->
+    <!-- Your suggested meetup -->
     <div class="mb-3">
-      <div class="text-muted small fw-semibold"><i class="bi bi-geo-alt me-1 text-danger"></i>Your Suggested Meetup</div>
-      <div class="fw-bold fs-6 text-dark">{{ report.meetup_point }}</div>
+      <div class="text-muted small fw-semibold mb-1">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i>Your suggested meetup
+      </div>
+      <div class="fw-bold text-dark">{{ report.meetup_point }}</div>
       {% if report.meetup_note %}
-        <div class="text-secondary small mt-1 bg-light p-2 rounded">
-          <i class="bi bi-card-text me-1"></i>Note: {{ report.meetup_note }}
+        <div class="text-secondary small mt-1">
+          <i class="bi bi-card-text me-1"></i>{{ report.meetup_note }}
         </div>
       {% endif %}
     </div>
 
-    <!-- Owner's Reply (highlighted prominently) -->
+    <!-- Owner's reply (prominent) -->
     {% if report.owner_reply %}
-      <div class="p-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 mb-2">
-        <div class="d-flex align-items-center mb-1 text-primary fw-bold small">
-          <i class="bi bi-chat-quote-fill me-1"></i> Message from the Card Owner:
+      <div class="p-3 rounded-2 mb-1" style="background:var(--cw-blue-light);border:1px solid #BFDBFE">
+        <div class="fw-semibold small mb-1" style="color:var(--cw-blue)">
+          <i class="bi bi-chat-quote-fill me-1"></i>Message from the card owner:
         </div>
         <p class="mb-0 fw-semibold text-dark">{{ report.owner_reply }}</p>
       </div>
     {% elif report.status != 'recovered' %}
-      <div class="p-2 bg-light text-center rounded text-muted small">
-        <i class="bi bi-arrow-repeat spin me-1"></i> Listening for owner response...
+      <div class="text-center py-3 text-muted small" style="background:var(--cw-bg);border-radius:var(--cw-r-md)">
+        <i class="bi bi-arrow-repeat me-1"></i>Waiting for the owner to reply...
       </div>
     {% endif %}
+
   </div>
 
-  <!-- Auto-Refresh Indicator / Timer for Finder -->
+  <!-- Auto-refresh countdown (only shown while waiting) -->
   {% if report.status != 'recovered' %}
-    <div class="cw-card p-3 shadow-sm text-center mb-3">
-      <div class="small text-muted mb-2">
+    <div class="cw-card p-3 text-center mb-3">
+      <p class="text-muted small mb-2">
         <i class="bi bi-arrow-clockwise me-1"></i>
-        Page reloads automatically in <strong id="refreshCountdown" class="text-primary">30</strong> seconds
-      </div>
-      <button type="button" class="btn btn-outline-primary btn-sm touch-target-sm px-3" onclick="window.location.reload();">
-        <i class="bi bi-arrow-clockwise me-1"></i> Refresh Now
+        Page refreshes in <strong id="countdown" class="text-dark">30</strong> seconds
+      </p>
+      <button type="button" class="btn btn-outline-primary btn-sm px-4"
+              onclick="window.location.reload()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh now
       </button>
-    </div>
-  {% else %}
-    <div class="alert alert-success d-flex align-items-center mb-3">
-      <i class="bi bi-heart-fill text-danger fs-4 me-2"></i>
-      <div class="small">
-        Thank you for helping keep RVCE clean and green under SDG 12! You saved a metro card from being discarded.
-      </div>
     </div>
   {% endif %}
 
   <!-- Privacy reminder -->
-  <div class="text-center">
-    <p class="text-muted small mb-0">
-      <i class="bi bi-shield-check me-1 text-success"></i> Safe & Private: No personal phone numbers or emails were revealed.
-    </p>
+  <div class="privacy-notice d-flex align-items-center gap-2">
+    <i class="bi bi-shield-check text-success flex-shrink-0"></i>
+    <span>No personal phone numbers or email addresses were shared with you during this process.</span>
   </div>
 
 </div>
@@ -113,18 +122,18 @@
 {% block scripts %}
 {% if report.status != 'recovered' %}
 <script>
-  // Countdown timer for user feedback alongside <meta http-equiv="refresh">
+  /* Countdown alongside the <meta http-equiv="refresh"> tag */
   (function() {
-    let timeLeft = 30;
-    const el = document.getElementById('refreshCountdown');
+    var n = 30;
+    var el = document.getElementById('countdown');
     if (!el) return;
-    const timer = setInterval(function() {
-      timeLeft -= 1;
-      if (timeLeft <= 0) {
-        clearInterval(timer);
+    var t = setInterval(function() {
+      n -= 1;
+      if (n <= 0) {
+        clearInterval(t);
         window.location.reload();
       } else {
-        el.textContent = timeLeft;
+        el.textContent = n;
       }
     }, 1000);
   })();

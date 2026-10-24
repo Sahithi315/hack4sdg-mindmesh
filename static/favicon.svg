@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- CardWapas favicon: card with QR-grid motif -->
+  <!-- Card body -->
+  <rect x="2" y="6" width="28" height="20" rx="3" ry="3" fill="#2563EB"/>
+  <!-- Card stripe (top) -->
+  <rect x="2" y="10" width="28" height="4" fill="#1D4ED8"/>
+  <!-- QR grid (white, bottom-right of card) -->
+  <rect x="18" y="15" width="9" height="9" rx="1" fill="white" opacity="0.15"/>
+  <!-- QR cells -->
+  <rect x="19" y="16" width="2" height="2" fill="white"/>
+  <rect x="22" y="16" width="2" height="2" fill="white"/>
+  <rect x="25" y="16" width="2" height="2" fill="white"/>
+  <rect x="19" y="19" width="2" height="2" fill="white"/>
+  <rect x="22" y="19" width="2" height="2" fill="white"/>
+  <rect x="25" y="19" width="2" height="2" fill="white"/>
+  <rect x="19" y="22" width="2" height="2" fill="white"/>
+  <rect x="22" y="22" width="2" height="2" fill="white"/>
+  <rect x="25" y="22" width="2" height="2" fill="white"/>
+  <!-- Chip / left side detail -->
+  <rect x="5" y="15" width="10" height="7" rx="1" fill="white" opacity="0.25"/>
+  <rect x="6" y="16" width="8" height="5" rx="0.5" fill="none" stroke="white" stroke-width="0.5" opacity="0.5"/>
+</svg>

@@ -1,150 +1,405 @@
 /* OWNER: Person 3 (Frontend). Keep it simple; Bootstrap does the heavy lifting. */
 
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
 :root {
-  --cw-primary: #0d6efd;
-  --cw-primary-hover: #0b5ed7;
-  --cw-bg-soft: #f8fafc;
-  --cw-card-border: #e2e8f0;
-  --cw-text-main: #1e293b;
-  --cw-text-muted: #64748b;
+  /* Brand palette */
+  --cw-blue:        #2563EB;
+  --cw-blue-hover:  #1D4ED8;
+  --cw-blue-light:  #EFF6FF;
+  --cw-navy:        #0F2342;
+
+  /* Neutral palette */
+  --cw-bg:          #FAFAF8;
+  --cw-surface:     #FFFFFF;
+  --cw-border:      #E5E7EB;
+  --cw-border-soft: #F3F4F6;
+
+  /* Text */
+  --cw-text:        #1C1C1E;
+  --cw-text-muted:  #6B7280;
+  --cw-text-soft:   #9CA3AF;
+
+  /* Status */
+  --cw-success:     #16A34A;
+  --cw-warning:     #D97706;
+  --cw-danger:      #DC2626;
+
+  /* Spacing scale */
+  --cw-r-sm:   6px;
+  --cw-r-md:   10px;
+  --cw-r-lg:   14px;
+
+  /* Shadows */
+  --cw-shadow-sm:  0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --cw-shadow-md:  0 4px 10px rgba(0,0,0,.08);
 }
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
-  background-color: var(--cw-bg-soft);
-  color: var(--cw-text-main);
+  background-color: var(--cw-bg);
+  color: var(--cw-text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
 
+/* Smooth transitions only for users who are OK with motion */
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .form-control, .form-select, .cw-card {
+    transition: box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar {
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.navbar-brand {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   LAYOUT HELPERS
+   ============================================================ */
 .narrow {
   max-width: 480px;
   width: 100%;
 }
 
-/* Fast tap targets & mobile touch ergonomics */
+/* Page section heading */
+.cw-section-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cw-text);
+  margin-bottom: 0.15rem;
+}
+
+/* ============================================================
+   CARDS / SURFACES
+   ============================================================ */
+.cw-card {
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-border);
+  border-radius: var(--cw-r-lg);
+  box-shadow: var(--cw-shadow-sm);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  border-radius: var(--cw-r-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.45rem 1rem;
+}
+
+.btn-primary {
+  background-color: var(--cw-blue);
+  border-color: var(--cw-blue);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--cw-blue-hover);
+  border-color: var(--cw-blue-hover);
+}
+
+/* Large touch-friendly submit buttons (finder page, login, register) */
 .touch-target-lg {
   min-height: 52px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
 }
 
-.form-control-lg, .form-select-lg {
+/* Focus ring — accessible, not hidden */
+.btn:focus-visible,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid var(--cw-blue);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.18);
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-control,
+.form-select {
+  border-color: var(--cw-border);
+  border-radius: var(--cw-r-md);
+  color: var(--cw-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--cw-blue);
+}
+
+.form-control-lg,
+.form-select-lg {
   min-height: 50px;
   font-size: 1rem;
-  border-radius: 10px;
+  border-radius: var(--cw-r-md);
 }
 
-/* Mobile cards & containers */
-.cw-card {
-  background: #ffffff;
-  border: 1px solid var(--cw-card-border);
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--cw-text);
+  margin-bottom: 0.35rem;
 }
 
-.cw-card-interactive:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+.form-text {
+  font-size: 0.8rem;
+  color: var(--cw-text-muted);
 }
 
-/* QR Code styling */
+.input-group-text {
+  border-color: var(--cw-border);
+  background: var(--cw-border-soft);
+  color: var(--cw-text-muted);
+  border-radius: var(--cw-r-md) 0 0 var(--cw-r-md);
+}
+.input-group > .form-control,
+.input-group > .form-select {
+  border-radius: 0 var(--cw-r-md) var(--cw-r-md) 0;
+}
+
+/* ============================================================
+   QR CODE
+   ============================================================ */
 .qr-frame {
-  background: #ffffff;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 12px;
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-border);
+  border-radius: var(--cw-r-md);
+  padding: 10px;
   display: inline-block;
 }
 
 .qr-img {
-  width: 170px;
-  height: 170px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
   display: block;
-  margin: 0 auto;
 }
 
-/* Friendlier Stat Tiles */
+/* ============================================================
+   STAT TILES (dashboard)
+   ============================================================ */
 .stat-card {
-  background: #ffffff;
-  border-radius: 14px;
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-border);
+  border-radius: var(--cw-r-lg);
   padding: 16px 14px;
   text-align: center;
-  border: 1px solid var(--cw-card-border);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
+/* Coloured top-edge accent (4 px strip) */
 .stat-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
+  top: 0; left: 0; right: 0;
+  height: 3px;
 }
-
-.stat-card-blue::before { background: #0d6efd; }
-.stat-card-amber::before { background: #f59e0b; }
-.stat-card-green::before { background: #10b981; }
-.stat-card-purple::before { background: #8b5cf6; }
+.stat-card-blue::before   { background: var(--cw-blue); }
+.stat-card-amber::before  { background: var(--cw-warning); }
+.stat-card-green::before  { background: var(--cw-success); }
+.stat-card-slate::before  { background: #64748B; }
 
 .stat-icon {
-  font-size: 1.25rem;
-  margin-bottom: 4px;
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+  color: var(--cw-text-muted);
 }
 
 .stat-num {
   font-size: 1.85rem;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--cw-text);
 }
 
 .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
   color: var(--cw-text-muted);
   font-weight: 600;
   margin-top: 4px;
 }
 
-/* Status Badges */
-.badge-pill-status {
-  padding: 6px 12px;
-  border-radius: 20px;
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+.cw-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
   font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: capitalize;
+  padding: 3px 9px;
+  border-radius: var(--cw-r-sm);
+  border: 1px solid transparent;
 }
 
-/* Privacy notice banner */
-.privacy-badge {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-  border-radius: 10px;
+.cw-badge-new {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+.cw-badge-replied {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+}
+
+.cw-badge-recovered {
+  background: #F0FDF4;
+  color: #15803D;
+  border-color: #BBF7D0;
+}
+
+.cw-badge-active {
+  background: #F0FDF4;
+  color: #15803D;
+  border-color: #BBF7D0;
+}
+
+.cw-badge-lost {
+  background: #FEF2F2;
+  color: #B91C1C;
+  border-color: #FECACA;
+}
+
+/* ============================================================
+   PRIVACY NOTICE
+   ============================================================ */
+.privacy-notice {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--cw-r-md);
   padding: 10px 14px;
-  font-size: 0.875rem;
+  font-size: 0.83rem;
+  color: #14532D;
 }
 
-/* Empty states */
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
 .empty-state {
   text-align: center;
-  padding: 32px 16px;
-  background: #ffffff;
-  border: 1px dashed #cbd5e1;
-  border-radius: 14px;
+  padding: 36px 20px;
+  background: var(--cw-surface);
+  border: 1px dashed var(--cw-border);
+  border-radius: var(--cw-r-lg);
 }
 
 .empty-state-icon {
-  font-size: 2.5rem;
-  color: #94a3b8;
-  margin-bottom: 12px;
+  font-size: 2.2rem;
+  color: var(--cw-text-soft);
+  margin-bottom: 10px;
+}
+
+/* ============================================================
+   HOW-IT-WORKS STEPS (landing section on login page)
+   ============================================================ */
+.how-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.how-step-num {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cw-blue);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.cw-footer {
+  background: var(--cw-surface);
+  border-top: 1px solid var(--cw-border);
+  padding: 16px 0;
+  font-size: 0.82rem;
+  color: var(--cw-text-muted);
+}
+
+.cw-footer a {
+  color: var(--cw-text-muted);
+  text-decoration: none;
+}
+.cw-footer a:hover {
+  color: var(--cw-blue);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   LEGAL PAGES (privacy / terms)
+   ============================================================ */
+.legal-page h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  color: var(--cw-text);
+}
+
+.legal-page p,
+.legal-page li {
+  font-size: 0.93rem;
+  color: var(--cw-text);
+  line-height: 1.7;
+}
+
+.legal-page ul {
+  padding-left: 1.4rem;
+}
+
+/* ============================================================
+   RESPONSIVE / MOBILE
+   ============================================================ */
+@media (max-width: 576px) {
+  .btn-lg,
+  .touch-target-lg {
+    min-height: 52px;
+  }
+
+  .cw-card {
+    border-radius: var(--cw-r-md);
+  }
+
+  .stat-num {
+    font-size: 1.5rem;
+  }
+
+  .qr-img {
+    width: 140px;
+    height: 140px;
+  }
 }
