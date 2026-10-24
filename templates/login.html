@@ -1,92 +1,103 @@
 {% extends "base.html" %}
-{% block title %}Log in - CardWapas{% endblock %}
+{% block title %}Log in – CardWapas{% endblock %}
 
 {% block content %}
-<div class="row g-4 align-items-center justify-content-center py-2 py-md-4">
+<div class="row g-5 align-items-center justify-content-center py-2 py-md-5">
 
-  <!-- Landing / Value Proposition Section -->
-  <div class="col-12 col-lg-7">
+  <!-- ============================================================
+       LEFT COLUMN: What is CardWapas?
+       ============================================================ -->
+  <div class="col-12 col-lg-6">
     <div class="pe-lg-4">
-      <div class="d-inline-flex align-items-center bg-primary bg-opacity-10 text-primary px-3 py-1.5 rounded-pill mb-3 small fw-semibold">
-        <i class="bi bi-shield-check me-2"></i> Private Metro Card Recovery
-      </div>
-      <h1 class="display-6 fw-bold text-dark mb-3 lh-sm">
-        Never lose your metro card balance again.
+
+      <!-- Brand heading -->
+      <h1 class="fw-bold mb-2" style="font-size:2rem;color:var(--cw-navy)">
+        CardWapas
       </h1>
-      
-      <!-- Required 2-3 lines explanation -->
-      <p class="lead text-secondary mb-4 fs-6 fs-md-5">
-        Stick a QR on your metro card. If someone finds it, they can reach you without seeing your number. Coordinate a safe, fast meetup in seconds.
+      <p class="mb-4" style="font-size:1.05rem;color:var(--cw-text-muted);max-width:420px">
+        Return lost metro cards without exposing your private contact details.
       </p>
 
-      <!-- 3-Step Visual Guide -->
-      <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-4">
-          <div class="p-3 bg-white border rounded-3 h-100 shadow-sm">
-            <div class="text-primary fs-3 mb-2"><i class="bi bi-printer"></i></div>
-            <h2 class="h6 fw-bold mb-1">1. Stick a QR</h2>
-            <p class="text-muted small mb-0">Print a unique recovery QR sticker for each card.</p>
+      <!-- How it works: three numbered steps -->
+      <div class="mb-4 d-flex flex-column gap-3">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">Register and get a QR sticker</div>
+            <div class="text-muted" style="font-size:.83rem">Create an account, add your metro card, and download a unique QR code to print and stick on your card.</div>
           </div>
         </div>
-        <div class="col-12 col-sm-4">
-          <div class="p-3 bg-white border rounded-3 h-100 shadow-sm">
-            <div class="text-success fs-3 mb-2"><i class="bi bi-qr-code-scan"></i></div>
-            <h2 class="h6 fw-bold mb-1">2. Finder Scans</h2>
-            <p class="text-muted small mb-0">Anyone can scan in 30s. No app or signup needed.</p>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">A finder scans it</div>
+            <div class="text-muted" style="font-size:.83rem">Anyone who finds your card scans the QR with their phone camera. No app or sign-up required.</div>
           </div>
         </div>
-        <div class="col-12 col-sm-4">
-          <div class="p-3 bg-white border rounded-3 h-100 shadow-sm">
-            <div class="text-info fs-3 mb-2"><i class="bi bi-geo-alt"></i></div>
-            <h2 class="h6 fw-bold mb-1">3. Safe Meetup</h2>
-            <p class="text-muted small mb-0">Agree on a public meetup point with total privacy.</p>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div>
+            <div class="fw-semibold" style="font-size:.93rem">Coordinate a safe meetup</div>
+            <div class="text-muted" style="font-size:.83rem">The finder suggests a public meetup point. You receive an email alert. Your phone number stays private throughout.</div>
           </div>
         </div>
       </div>
 
-      <!-- SDG 12 Tag -->
-      <div class="d-flex align-items-center text-muted small">
-        <i class="bi bi-recycle text-success fs-5 me-2"></i>
-        <span>Every recovered metro card reduces plastic and e-waste under <strong>UN SDG 12</strong>.</span>
+      <!-- Privacy assurance line -->
+      <div class="privacy-notice d-flex align-items-center gap-2">
+        <i class="bi bi-shield-check fs-5 text-success flex-shrink-0"></i>
+        <span>Your name, email, and phone are never shown to finders or encoded in the QR code.</span>
       </div>
+
     </div>
   </div>
 
-  <!-- Login Form Card -->
-  <div class="col-12 col-lg-5" style="max-width: 440px;">
-    <div class="cw-card p-4 shadow-sm">
-      <div class="text-center mb-3">
-        <h2 class="h4 fw-bold mb-1">Welcome Back</h2>
-        <p class="text-muted small">Sign in to manage your cards and view reports</p>
+  <!-- ============================================================
+       RIGHT COLUMN: Login form
+       ============================================================ -->
+  <div class="col-12 col-lg-5" style="max-width:420px">
+    <div class="cw-card p-4">
+      <div class="text-center mb-4">
+        <h2 class="h5 fw-bold mb-1">Sign in to CardWapas</h2>
+        <p class="text-muted small mb-0">Manage your cards and found reports</p>
       </div>
 
-      <form method="post">
+      <form method="post" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="mb-3">
-          <label class="form-label small fw-semibold">Email Address</label>
+          <label for="email" class="form-label">Email address</label>
           <div class="input-group">
-            <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
-            <input class="form-control form-control-lg" type="email" name="email" placeholder="name@rvce.edu.in" required autofocus>
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input class="form-control form-control-lg" type="email" id="email" name="email"
+                   placeholder="you@example.com" required autocomplete="email" autofocus>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Password</label>
+        <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
           <div class="input-group">
-            <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
-            <input class="form-control form-control-lg" type="password" name="password" placeholder="••••••••" required>
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input class="form-control form-control-lg" type="password" id="password" name="password"
+                   placeholder="Your password" required autocomplete="current-password">
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg w-100 touch-target-lg shadow-sm mt-2">
-          <i class="bi bi-box-arrow-in-right me-1"></i> Log In
+        <button type="submit" class="btn btn-primary btn-lg w-100 touch-target-lg">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Log in
         </button>
       </form>
 
-      <div class="text-center mt-3 pt-3 border-top">
-        <p class="text-muted small mb-0">
-          New here? <a href="{{ url_for('auth.register') }}" class="fw-bold text-decoration-none text-primary">Create an account</a>
+      <div class="text-center mt-4 pt-3 border-top">
+        <p class="text-muted small mb-1">
+          New to CardWapas?
+          <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none" style="color:var(--cw-blue)">Create an account</a>
+        </p>
+        <p class="text-muted" style="font-size:.78rem;margin-bottom:0">
+          By signing in you agree to our
+          <a href="/terms" class="text-muted text-decoration-underline">Terms</a>
+          and
+          <a href="/privacy" class="text-muted text-decoration-underline">Privacy Policy</a>.
         </p>
       </div>
     </div>
