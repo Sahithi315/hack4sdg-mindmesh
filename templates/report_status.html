@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Report status - CardWapas{% endblock %}
+{% block content %}
+<div class="narrow mx-auto">
+  <h2 class="mb-3">Thank you!</h2>
+  <p>The owner has been notified. Keep this page open or bookmark it to see their reply.</p>
+
+  <div class="card"><div class="card-body">
+    <p class="mb-1"><strong>Your suggested meetup:</strong> {{ report.meetup_point }}</p>
+    <p class="mb-1"><strong>Status:</strong>
+      {% if report.status == 'recovered' %}Card returned. Thank you!
+      {% elif report.status == 'owner_replied' %}The owner replied
+      {% else %}Waiting for the owner{% endif %}</p>
+    {% if report.owner_reply %}<p class="mb-0"><strong>Owner says:</strong> {{ report.owner_reply }}</p>{% endif %}
+  </div></div>
+  {# TODO (Person 3): auto-refresh this page every ~30s so the finder sees replies without reloading. #}
+</div>
+{% endblock %}

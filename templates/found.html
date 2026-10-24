@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}You found a card - CardWapas{% endblock %}
+{% block content %}
+{# PUBLIC PAGE: never show owner name, email, or phone here. OWNER: Person 3 (make it fast and mobile-friendly). #}
+<div class="narrow mx-auto">
+  <h2 class="mb-2">Thank you for finding this card!</h2>
+  <p class="text-muted">Tell the owner where you can hand it over. Your details stay private unless you choose to share them.</p>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="mb-3"><label class="form-label">Where can you meet the owner?</label>
+      <select class="form-select" name="meetup_point" required>
+        <option value="" disabled selected>Choose a public place</option>
+        {% for p in meetup_points %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+      </select></div>
+
+    <div class="mb-3"><label class="form-label">Note (optional)</label>
+      <input class="form-control" name="meetup_note" maxlength="200" placeholder="e.g. I'm here until 4 PM"></div>
+
+    <div class="mb-3"><label class="form-label">Message to owner (optional)</label>
+      <textarea class="form-control" name="message" rows="2" maxlength="500"></textarea></div>
+
+    <div class="mb-3"><label class="form-label">Your contact (optional)</label>
+      <input class="form-control" name="finder_contact" maxlength="120" placeholder="Only if you are comfortable sharing"></div>
+
+    <button class="btn btn-primary w-100">Notify the owner</button>
+  </form>
+</div>
+{% endblock %}

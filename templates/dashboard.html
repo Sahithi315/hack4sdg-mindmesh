@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - CardWapas{% endblock %}
+{% block content %}
+
+<h2 class="mb-3">Your dashboard</h2>
+
+{# ---- Impact counters (Person 4 owns the numbers, Person 3 owns the look) ---- #}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.cards }}</div>Cards registered</div></div>
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.reports }}</div>Found reports</div></div>
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.recovered }}</div>Recovered</div></div>
+  <div class="col-6 col-md-3"><div class="stat">
+    <div class="stat-num">{{ stats.avg_hours_to_recover if stats.avg_hours_to_recover is not none else '-' }}</div>
+    Avg hours to recover</div></div>
+</div>
+
+{# ---- Add a card ---- #}
+<div class="card mb-4"><div class="card-body">
+  <h5 class="card-title">Add a card</h5>
+  <form method="post" action="{{ url_for('cards.add_card') }}" class="row g-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-9"><input class="form-control" name="label" maxlength="60"
+      placeholder="Label, e.g. Blue metro card"></div>
+    <div class="col-md-3"><button class="btn btn-primary w-100">Generate QR</button></div>
+  </form>
+</div></div>
+
+{# ---- Your cards ---- #}
+<h4>Your cards</h4>
+{% if not cards %}
+  <p class="text-muted">No cards yet. Add one above.</p>
+{% endif %}
+<div class="row g-3 mb-4">
+  {% for card in cards %}
+  <div class="col-md-4">
+    <div class="card h-100"><div class="card-body text-center">
+      <h6>{{ card.label }}</h6>
+      <img class="qr-img mb-2" src="{{ url_for('cards.card_qr', card_id=card.id) }}" alt="QR for {{ card.label }}">
+      <div class="mb-2"><span class="badge bg-{{ 'danger' if card.status == 'lost' else 'success' }}">{{ card.status }}</span></div>
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('cards.card_qr', card_id=card.id, download=1) }}">Download QR</a>
+      <form method="post" action="{{ url_for('cards.set_card_status', card_id=card.id) }}" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="status" value="{{ 'active' if card.status == 'lost' else 'lost' }}">
+        <button class="btn btn-sm btn-outline-secondary">Mark as {{ 'active' if card.status == 'lost' else 'lost' }}</button>
+      </form>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+
+{# ---- Found reports ---- #}
+<h4>Found reports</h4>
+{% if not reports %}
+  <p class="text-muted">No one has reported your card found yet.</p>
+{% endif %}
+{% for r in reports %}
+<div class="card mb-3"><div class="card-body">
+  <div class="d-flex justify-content-between">
+    <h6>{{ r.card.label }}</h6>
+    <span class="badge bg-{{ 'success' if r.status == 'recovered' else 'warning' }}">{{ r.status }}</span>
+  </div>
+  <p class="mb-1"><strong>Suggested meetup:</strong> {{ r.meetup_point }}{% if r.meetup_note %} - {{ r.meetup_note }}{% endif %}</p>
+  {% if r.message %}<p class="mb-1"><strong>Message:</strong> {{ r.message }}</p>{% endif %}
+  {% if r.finder_contact %}<p class="mb-1"><strong>Finder shared:</strong> {{ r.finder_contact }}</p>{% endif %}
+  <p class="text-muted small">Reported {{ r.created_at.strftime('%d %b %Y, %H:%M') }} UTC</p>
+
+  {% if r.status != 'recovered' %}
+  <form method="post" action="{{ url_for('reports.reply', report_id=r.id) }}" class="row g-2 mb-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-9"><input class="form-control" name="owner_reply" maxlength="300"
+      placeholder="Reply, e.g. Great, I'll be at the library entrance at 4 PM" value="{{ r.owner_reply or '' }}"></div>
+    <div class="col-md-3"><button class="btn btn-outline-primary w-100">Send reply</button></div>
+  </form>
+  <form method="post" action="{{ url_for('reports.recover', report_id=r.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-success btn-sm">Mark as recovered</button>
+  </form>
+  {% else %}
+    <p class="text-success mb-0">Card recovered.</p>
+  {% endif %}
+</div></div>
+{% endfor %}
+
+{% endblock %}

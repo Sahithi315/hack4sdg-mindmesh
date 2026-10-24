@@ -1,0 +1,5 @@
+/* OWNER: Person 3 (Frontend). Keep it simple; Bootstrap does the heavy lifting. */
+.narrow { max-width: 480px; }
+.qr-img { width: 160px; height: 160px; }
+.stat { background: #f1f3f5; border-radius: 8px; padding: 12px; text-align: center; font-size: 0.9rem; }
+.stat-num { font-size: 1.6rem; font-weight: 700; }
