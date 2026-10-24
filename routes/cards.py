@@ -3,7 +3,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, s
 from flask_login import current_user, login_required
 
 from extensions import db
-from models import Card, FoundReport
+from models import Card, FoundReport, new_token
 from services.analytics import get_stats
 from services.qr import build_found_url, generate_qr_png
 
@@ -70,5 +70,23 @@ def set_card_status(card_id):
     return redirect(url_for("cards.dashboard"))
 
 
-# TODO (Person 1): add a route to regenerate a card's token (in case a QR is misused),
-# and a route to delete a card.
+@bp.route("/cards/<int:card_id>/regenerate-token", methods=["POST"])
+@login_required
+def regenerate_card_token(card_id):
+    card = _owned_card_or_404(card_id)
+    card.token = new_token()
+    db.session.commit()
+    flash("QR token regenerated. The old QR code will no longer work.", "success")
+    return redirect(url_for("cards.dashboard"))
+
+
+@bp.route("/cards/<int:card_id>/delete", methods=["POST"])
+@login_required
+def delete_card(card_id):
+    card = _owned_card_or_404(card_id)
+    label = card.label
+    FoundReport.query.filter_by(card_id=card.id).delete()
+    db.session.delete(card)
+    db.session.commit()
+    flash(f"Card \"{label}\" deleted.", "info")
+    return redirect(url_for("cards.dashboard"))

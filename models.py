@@ -45,7 +45,11 @@ class Card(db.Model):
     created_at = db.Column(db.DateTime, default=utcnow)
 
     reports = db.relationship(
-        "FoundReport", backref="card", lazy=True, order_by="FoundReport.created_at.desc()"
+        "FoundReport",
+        backref="card",
+        lazy=True,
+        order_by="FoundReport.created_at.desc()",
+        cascade="all, delete-orphan",
     )
 
 

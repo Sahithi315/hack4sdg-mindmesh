@@ -36,6 +36,10 @@ def create_app():
             return redirect(url_for("cards.dashboard"))
         return redirect(url_for("auth.login"))
 
+    @app.route("/healthz")
+    def healthz():
+        return "ok", 200
+
     with app.app_context():
         db.create_all()
 
