@@ -1,18 +1,133 @@
 {% extends "base.html" %}
-{% block title %}Report status - CardWapas{% endblock %}
-{% block content %}
-<div class="narrow mx-auto">
-  <h2 class="mb-3">Thank you!</h2>
-  <p>The owner has been notified. Keep this page open or bookmark it to see their reply.</p>
+{% block title %}Report Status - CardWapas{% endblock %}
 
-  <div class="card"><div class="card-body">
-    <p class="mb-1"><strong>Your suggested meetup:</strong> {{ report.meetup_point }}</p>
-    <p class="mb-1"><strong>Status:</strong>
-      {% if report.status == 'recovered' %}Card returned. Thank you!
-      {% elif report.status == 'owner_replied' %}The owner replied
-      {% else %}Waiting for the owner{% endif %}</p>
-    {% if report.owner_reply %}<p class="mb-0"><strong>Owner says:</strong> {{ report.owner_reply }}</p>{% endif %}
-  </div></div>
-  {# TODO (Person 3): auto-refresh this page every ~30s so the finder sees replies without reloading. #}
+{% block navbar_nav %}
+<span class="badge bg-success bg-opacity-25 text-light border border-success border-opacity-50 small py-1.5 px-2.5">
+  <i class="bi bi-shield-lock me-1"></i>Anonymous Finder Portal
+</span>
+{% endblock %}
+
+{% block extra_head %}
+{# Only auto-refresh if the card has not yet been marked recovered #}
+{% if report.status != 'recovered' %}
+<meta http-equiv="refresh" content="30">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{# PUBLIC PAGE: never show owner name, email, or phone here. OWNER: Person 3. #}
+<div class="narrow mx-auto">
+
+  <!-- Header Card -->
+  <div class="text-center mb-3">
+    {% if report.status == 'recovered' %}
+      <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-2" style="width: 60px; height: 60px;">
+        <i class="bi bi-check-circle-fill fs-1"></i>
+      </div>
+      <h2 class="h4 fw-bold text-success mb-1">Card Returned!</h2>
+      <p class="text-muted small">You successfully reunited a metro card with its owner.</p>
+    {% elif report.status == 'owner_replied' %}
+      <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-2" style="width: 60px; height: 60px;">
+        <i class="bi bi-chat-dots-fill fs-2"></i>
+      </div>
+      <h2 class="h4 fw-bold text-primary mb-1">The Owner Replied!</h2>
+      <p class="text-muted small">See the meetup details from the owner below.</p>
+    {% else %}
+      <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-2" style="width: 60px; height: 60px;">
+        <i class="bi bi-hourglass-split fs-2"></i>
+      </div>
+      <h2 class="h4 fw-bold mb-1">Waiting for Owner's Reply</h2>
+      <p class="text-muted small">The owner has been notified via email. Keep this page open or bookmark it.</p>
+    {% endif %}
+  </div>
+
+  <!-- Status Card -->
+  <div class="cw-card p-3 p-sm-4 shadow-sm mb-3">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+      <span class="text-muted small text-uppercase fw-bold">Current Status</span>
+      {% if report.status == 'recovered' %}
+        <span class="badge bg-success badge-pill-status"><i class="bi bi-check2-all me-1"></i>Recovered</span>
+      {% elif report.status == 'owner_replied' %}
+        <span class="badge bg-primary badge-pill-status"><i class="bi bi-reply-fill me-1"></i>Owner Replied</span>
+      {% else %}
+        <span class="badge bg-warning text-dark badge-pill-status"><i class="bi bi-clock-history me-1"></i>Waiting for Reply</span>
+      {% endif %}
+    </div>
+
+    <!-- Suggested meetup -->
+    <div class="mb-3">
+      <div class="text-muted small fw-semibold"><i class="bi bi-geo-alt me-1 text-danger"></i>Your Suggested Meetup</div>
+      <div class="fw-bold fs-6 text-dark">{{ report.meetup_point }}</div>
+      {% if report.meetup_note %}
+        <div class="text-secondary small mt-1 bg-light p-2 rounded">
+          <i class="bi bi-card-text me-1"></i>Note: {{ report.meetup_note }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Owner's Reply (highlighted prominently) -->
+    {% if report.owner_reply %}
+      <div class="p-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 mb-2">
+        <div class="d-flex align-items-center mb-1 text-primary fw-bold small">
+          <i class="bi bi-chat-quote-fill me-1"></i> Message from the Card Owner:
+        </div>
+        <p class="mb-0 fw-semibold text-dark">{{ report.owner_reply }}</p>
+      </div>
+    {% elif report.status != 'recovered' %}
+      <div class="p-2 bg-light text-center rounded text-muted small">
+        <i class="bi bi-arrow-repeat spin me-1"></i> Listening for owner response...
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Auto-Refresh Indicator / Timer for Finder -->
+  {% if report.status != 'recovered' %}
+    <div class="cw-card p-3 shadow-sm text-center mb-3">
+      <div class="small text-muted mb-2">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Page reloads automatically in <strong id="refreshCountdown" class="text-primary">30</strong> seconds
+      </div>
+      <button type="button" class="btn btn-outline-primary btn-sm touch-target-sm px-3" onclick="window.location.reload();">
+        <i class="bi bi-arrow-clockwise me-1"></i> Refresh Now
+      </button>
+    </div>
+  {% else %}
+    <div class="alert alert-success d-flex align-items-center mb-3">
+      <i class="bi bi-heart-fill text-danger fs-4 me-2"></i>
+      <div class="small">
+        Thank you for helping keep RVCE clean and green under SDG 12! You saved a metro card from being discarded.
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Privacy reminder -->
+  <div class="text-center">
+    <p class="text-muted small mb-0">
+      <i class="bi bi-shield-check me-1 text-success"></i> Safe & Private: No personal phone numbers or emails were revealed.
+    </p>
+  </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if report.status != 'recovered' %}
+<script>
+  // Countdown timer for user feedback alongside <meta http-equiv="refresh">
+  (function() {
+    let timeLeft = 30;
+    const el = document.getElementById('refreshCountdown');
+    if (!el) return;
+    const timer = setInterval(function() {
+      timeLeft -= 1;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        window.location.reload();
+      } else {
+        el.textContent = timeLeft;
+      }
+    }, 1000);
+  })();
+</script>
+{% endif %}
 {% endblock %}
