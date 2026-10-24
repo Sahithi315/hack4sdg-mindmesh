@@ -1,5 +1,150 @@
 /* OWNER: Person 3 (Frontend). Keep it simple; Bootstrap does the heavy lifting. */
-.narrow { max-width: 480px; }
-.qr-img { width: 160px; height: 160px; }
-.stat { background: #f1f3f5; border-radius: 8px; padding: 12px; text-align: center; font-size: 0.9rem; }
-.stat-num { font-size: 1.6rem; font-weight: 700; }
+
+:root {
+  --cw-primary: #0d6efd;
+  --cw-primary-hover: #0b5ed7;
+  --cw-bg-soft: #f8fafc;
+  --cw-card-border: #e2e8f0;
+  --cw-text-main: #1e293b;
+  --cw-text-muted: #64748b;
+}
+
+body {
+  background-color: var(--cw-bg-soft);
+  color: var(--cw-text-main);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.narrow {
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Fast tap targets & mobile touch ergonomics */
+.touch-target-lg {
+  min-height: 52px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.form-control-lg, .form-select-lg {
+  min-height: 50px;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+/* Mobile cards & containers */
+.cw-card {
+  background: #ffffff;
+  border: 1px solid var(--cw-card-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cw-card-interactive:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* QR Code styling */
+.qr-frame {
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 12px;
+  display: inline-block;
+}
+
+.qr-img {
+  width: 170px;
+  height: 170px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Friendlier Stat Tiles */
+.stat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 14px;
+  text-align: center;
+  border: 1px solid var(--cw-card-border);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.stat-card-blue::before { background: #0d6efd; }
+.stat-card-amber::before { background: #f59e0b; }
+.stat-card-green::before { background: #10b981; }
+.stat-card-purple::before { background: #8b5cf6; }
+
+.stat-icon {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.stat-num {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cw-text-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Status Badges */
+.badge-pill-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+/* Privacy notice banner */
+.privacy-badge {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}

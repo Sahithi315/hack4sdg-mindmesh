@@ -1,84 +1,312 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - CardWapas{% endblock %}
+
 {% block content %}
-
-<h2 class="mb-3">Your dashboard</h2>
-
-{# ---- Impact counters (Person 4 owns the numbers, Person 3 owns the look) ---- #}
-<div class="row g-3 mb-4">
-  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.cards }}</div>Cards registered</div></div>
-  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.reports }}</div>Found reports</div></div>
-  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ stats.recovered }}</div>Recovered</div></div>
-  <div class="col-6 col-md-3"><div class="stat">
-    <div class="stat-num">{{ stats.avg_hours_to_recover if stats.avg_hours_to_recover is not none else '-' }}</div>
-    Avg hours to recover</div></div>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 fw-bold mb-1">My Dashboard</h1>
+    <p class="text-muted small mb-0">Manage your protected metro cards and review finder recovery reports.</p>
+  </div>
+  <div class="mt-2 mt-sm-0">
+    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 py-2 px-3 rounded-pill">
+      <i class="bi bi-person-check-fill me-1"></i> Logged in as {{ current_user.name }}
+    </span>
+  </div>
 </div>
 
-{# ---- Add a card ---- #}
-<div class="card mb-4"><div class="card-body">
-  <h5 class="card-title">Add a card</h5>
+{# ---- Four Friendly Stat Tiles ---- #}
+<div class="row g-3 mb-4">
+  <!-- Stat 1: Cards -->
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-card-blue h-100">
+      <div class="stat-icon text-primary"><i class="bi bi-credit-card-2-front"></i></div>
+      <div class="stat-num text-primary">{{ stats.cards }}</div>
+      <div class="stat-label">Cards Registered</div>
+      <div class="text-muted small d-none d-sm-block mt-1">Protected with QR</div>
+    </div>
+  </div>
+
+  <!-- Stat 2: Reports -->
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-card-amber h-100">
+      <div class="stat-icon text-warning"><i class="bi bi-bell-fill"></i></div>
+      <div class="stat-num text-warning-emphasis">{{ stats.reports }}</div>
+      <div class="stat-label">Found Reports</div>
+      <div class="text-muted small d-none d-sm-block mt-1">Scanned by finders</div>
+    </div>
+  </div>
+
+  <!-- Stat 3: Recovered -->
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-card-green h-100">
+      <div class="stat-icon text-success"><i class="bi bi-check-circle-fill"></i></div>
+      <div class="stat-num text-success">{{ stats.recovered }}</div>
+      <div class="stat-label">Cards Recovered</div>
+      <div class="text-muted small d-none d-sm-block mt-1">Safely returned</div>
+    </div>
+  </div>
+
+  <!-- Stat 4: Avg Hours -->
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-card-purple h-100">
+      <div class="stat-icon text-info"><i class="bi bi-lightning-charge-fill"></i></div>
+      <div class="stat-num text-info-emphasis">
+        {{ stats.avg_hours_to_recover if stats.avg_hours_to_recover is not none else '-' }}
+      </div>
+      <div class="stat-label">Avg Recovery (Hrs)</div>
+      <div class="text-muted small d-none d-sm-block mt-1">Hours to reunite</div>
+    </div>
+  </div>
+</div>
+
+{# ---- Section 1: Add a Card ---- #}
+<div class="cw-card p-3 p-md-4 shadow-sm mb-4">
+  <div class="d-flex align-items-center mb-2">
+    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle me-2" style="width: 36px; height: 36px;">
+      <i class="bi bi-plus-lg fw-bold"></i>
+    </div>
+    <h2 class="h5 fw-bold mb-0">Add a Metro Card</h2>
+  </div>
+  <p class="text-muted small mb-3">
+    Give your card a nickname (e.g. <em>"Purple Line Card"</em> or <em>"College ID Card"</em>). We will generate a unique QR code sticker for you to print.
+  </p>
   <form method="post" action="{{ url_for('cards.add_card') }}" class="row g-2">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="col-md-9"><input class="form-control" name="label" maxlength="60"
-      placeholder="Label, e.g. Blue metro card"></div>
-    <div class="col-md-3"><button class="btn btn-primary w-100">Generate QR</button></div>
+    <div class="col-12 col-md-9">
+      <input class="form-control form-control-lg" name="label" maxlength="60"
+             placeholder="Label, e.g. Blue Metro Card or RVCE Student Card" required>
+    </div>
+    <div class="col-12 col-md-3">
+      <button class="btn btn-primary btn-lg w-100 touch-target-lg shadow-sm">
+        <i class="bi bi-qr-code me-1"></i> Generate QR
+      </button>
+    </div>
   </form>
-</div></div>
-
-{# ---- Your cards ---- #}
-<h4>Your cards</h4>
-{% if not cards %}
-  <p class="text-muted">No cards yet. Add one above.</p>
-{% endif %}
-<div class="row g-3 mb-4">
-  {% for card in cards %}
-  <div class="col-md-4">
-    <div class="card h-100"><div class="card-body text-center">
-      <h6>{{ card.label }}</h6>
-      <img class="qr-img mb-2" src="{{ url_for('cards.card_qr', card_id=card.id) }}" alt="QR for {{ card.label }}">
-      <div class="mb-2"><span class="badge bg-{{ 'danger' if card.status == 'lost' else 'success' }}">{{ card.status }}</span></div>
-      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('cards.card_qr', card_id=card.id, download=1) }}">Download QR</a>
-      <form method="post" action="{{ url_for('cards.set_card_status', card_id=card.id) }}" class="d-inline">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="status" value="{{ 'active' if card.status == 'lost' else 'lost' }}">
-        <button class="btn btn-sm btn-outline-secondary">Mark as {{ 'active' if card.status == 'lost' else 'lost' }}</button>
-      </form>
-    </div></div>
-  </div>
-  {% endfor %}
 </div>
 
-{# ---- Found reports ---- #}
-<h4>Found reports</h4>
-{% if not reports %}
-  <p class="text-muted">No one has reported your card found yet.</p>
-{% endif %}
-{% for r in reports %}
-<div class="card mb-3"><div class="card-body">
-  <div class="d-flex justify-content-between">
-    <h6>{{ r.card.label }}</h6>
-    <span class="badge bg-{{ 'success' if r.status == 'recovered' else 'warning' }}">{{ r.status }}</span>
+{# ---- Section 2: Your Cards ---- #}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="h5 fw-bold mb-0"><i class="bi bi-wallet2 text-primary me-2"></i>Your Protected Cards</h2>
+    <span class="text-muted small">Cards you have registered with CardWapas</span>
   </div>
-  <p class="mb-1"><strong>Suggested meetup:</strong> {{ r.meetup_point }}{% if r.meetup_note %} - {{ r.meetup_note }}{% endif %}</p>
-  {% if r.message %}<p class="mb-1"><strong>Message:</strong> {{ r.message }}</p>{% endif %}
-  {% if r.finder_contact %}<p class="mb-1"><strong>Finder shared:</strong> {{ r.finder_contact }}</p>{% endif %}
-  <p class="text-muted small">Reported {{ r.created_at.strftime('%d %b %Y, %H:%M') }} UTC</p>
+</div>
 
-  {% if r.status != 'recovered' %}
-  <form method="post" action="{{ url_for('reports.reply', report_id=r.id) }}" class="row g-2 mb-2">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="col-md-9"><input class="form-control" name="owner_reply" maxlength="300"
-      placeholder="Reply, e.g. Great, I'll be at the library entrance at 4 PM" value="{{ r.owner_reply or '' }}"></div>
-    <div class="col-md-3"><button class="btn btn-outline-primary w-100">Send reply</button></div>
-  </form>
-  <form method="post" action="{{ url_for('reports.recover', report_id=r.id) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button class="btn btn-success btn-sm">Mark as recovered</button>
-  </form>
-  {% else %}
-    <p class="text-success mb-0">Card recovered.</p>
-  {% endif %}
-</div></div>
-{% endfor %}
+{% if not cards %}
+  <div class="empty-state mb-4">
+    <div class="empty-state-icon"><i class="bi bi-card-heading"></i></div>
+    <h3 class="h6 fw-bold text-dark">No cards registered yet</h3>
+    <p class="text-muted small mb-3" style="max-width: 420px; margin: 0 auto;">
+      Add your first metro card using the form above. Once generated, print your unique QR sticker and adhere it to your card.
+    </p>
+  </div>
+{% else %}
+  <div class="row g-3 mb-4">
+    {% for card in cards %}
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="cw-card h-100 p-3 shadow-sm d-flex flex-column text-center">
+        <!-- Card Header & Badge -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-light text-muted border small text-truncate" style="max-width: 140px;">
+            #{{ card.id }}
+          </span>
+          {% if card.status == 'lost' %}
+            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 badge-pill-status">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i>Lost
+            </span>
+          {% else %}
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 badge-pill-status">
+              <i class="bi bi-check-circle-fill me-1"></i>Active
+            </span>
+          {% endif %}
+        </div>
+
+        <h3 class="h6 fw-bold text-dark mb-3 text-truncate" title="{{ card.label }}">{{ card.label }}</h3>
+
+        <!-- QR frame -->
+        <div class="my-auto pb-2">
+          <div class="qr-frame shadow-sm">
+            <img class="qr-img" src="{{ url_for('cards.card_qr', card_id=card.id) }}" alt="QR Code for {{ card.label }}">
+          </div>
+          <div class="text-muted small mt-2">Scan to test finder flow</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-grid gap-2 mt-3 pt-2 border-top">
+          <a class="btn btn-outline-primary btn-sm touch-target-sm fw-semibold" href="{{ url_for('cards.card_qr', card_id=card.id, download=1) }}">
+            <i class="bi bi-download me-1"></i> Download QR Sticker
+          </a>
+          <form method="post" action="{{ url_for('cards.set_card_status', card_id=card.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="{{ 'active' if card.status == 'lost' else 'lost' }}">
+            {% if card.status == 'lost' %}
+              <button class="btn btn-outline-success btn-sm w-100">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Mark as Active
+              </button>
+            {% else %}
+              <button class="btn btn-outline-danger btn-sm w-100">
+                <i class="bi bi-flag me-1"></i> Mark as Lost
+              </button>
+            {% endif %}
+          </form>
+
+          <!-- Card Management: Regenerate Token & Delete Card -->
+          <div class="d-flex gap-2 pt-1">
+            <form method="post" action="{{ url_for('cards.regenerate_card_token', card_id=card.id) }}" class="flex-fill"
+                  onsubmit="return confirm('Regenerate QR code? The current printed QR sticker will permanently stop working.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-light btn-sm text-secondary border w-100" title="Generate new QR if misprinted or compromised">
+                <i class="bi bi-arrow-repeat text-warning me-1"></i> Regenerate
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('cards.delete_card', card_id=card.id) }}" class="flex-fill"
+                  onsubmit="return confirm('Delete this card and all its reports? This action cannot be undone.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-light btn-sm text-danger border w-100" title="Delete card permanently">
+                <i class="bi bi-trash3 me-1"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{# ---- Section 3: Found Reports ---- #}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="h5 fw-bold mb-0"><i class="bi bi-bell text-warning me-2"></i>Found Reports & Inquiries</h2>
+    <span class="text-muted small">Notifications submitted by people who scanned your card</span>
+  </div>
+</div>
+
+{% if not reports %}
+  <div class="empty-state mb-4">
+    <div class="empty-state-icon"><i class="bi bi-shield-check text-success"></i></div>
+    <h3 class="h6 fw-bold text-dark">No found reports yet</h3>
+    <p class="text-muted small mb-0" style="max-width: 420px; margin: 0 auto;">
+      None of your cards are currently reported lost. When a finder scans your QR and chooses a meetup point, their message will show up right here.
+    </p>
+  </div>
+{% else %}
+  <div class="row g-3 mb-4">
+    {% for r in reports %}
+    <div class="col-12">
+      <div class="cw-card p-3 p-md-4 shadow-sm border-start border-4 {{ 'border-success' if r.status == 'recovered' else ('border-primary' if r.status == 'owner_replied' else 'border-warning') }}">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <div class="d-flex align-items-center">
+            <span class="badge bg-secondary bg-opacity-10 text-dark fw-bold me-2 px-2.5 py-1.5 rounded">
+              <i class="bi bi-credit-card me-1"></i>{{ r.card.label }}
+            </span>
+            <span class="text-muted small">
+              <i class="bi bi-clock me-1"></i>{{ r.created_at.strftime('%d %b %Y, %H:%M') }} UTC
+            </span>
+          </div>
+          <div class="mt-2 mt-sm-0">
+            {% if r.status == 'recovered' %}
+              <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 badge-pill-status">
+                <i class="bi bi-check2-all me-1"></i>Recovered
+              </span>
+            {% elif r.status == 'owner_replied' %}
+              <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 badge-pill-status">
+                <i class="bi bi-reply-fill me-1"></i>Replied
+              </span>
+            {% else %}
+              <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-50 badge-pill-status">
+                <i class="bi bi-exclamation-circle-fill me-1"></i>New Report
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- Suggested Meetup -->
+          <div class="col-12 col-md-6">
+            <div class="p-2.5 bg-light rounded-3 h-100">
+              <div class="text-muted small fw-semibold mb-1">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i>Suggested Meetup Spot:
+              </div>
+              <div class="fw-bold text-dark fs-6">{{ r.meetup_point }}</div>
+              {% if r.meetup_note %}
+                <div class="text-secondary small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>Note: {{ r.meetup_note }}
+                </div>
+              {% endif %}
+              {% if r.latitude and r.longitude %}
+                <div class="mt-2 pt-1 border-top border-secondary border-opacity-25 small">
+                  <a href="https://www.openstreetmap.org/?mlat={{ r.latitude }}&mlon={{ r.longitude }}#map=16/{{ r.latitude }}/{{ r.longitude }}"
+                     target="_blank" rel="noopener noreferrer" class="badge bg-white text-primary border text-decoration-none">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>View Location on OpenStreetMap
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Finder's Message / Contact -->
+          <div class="col-12 col-md-6">
+            <div class="p-2.5 bg-light rounded-3 h-100">
+              <div class="text-muted small fw-semibold mb-1">
+                <i class="bi bi-chat-left-text-fill text-primary me-1"></i>Finder's Message:
+              </div>
+              {% if r.message %}
+                <div class="text-dark small mb-1 fst-italic">"{{ r.message }}"</div>
+              {% else %}
+                <div class="text-muted small fst-italic">No extra message attached.</div>
+              {% endif %}
+
+              {% if r.finder_contact %}
+                <div class="mt-2 pt-1 border-top border-secondary border-opacity-25 small">
+                  <strong class="text-secondary"><i class="bi bi-telephone-outbound me-1"></i>Finder Contact:</strong>
+                  <span class="text-dark fw-semibold ms-1">{{ r.finder_contact }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Owner's Reply History & Form -->
+        {% if r.status != 'recovered' %}
+          <div class="pt-2">
+            <form method="post" action="{{ url_for('reports.reply', report_id=r.id) }}" class="row g-2 mb-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <div class="col-12 col-md-9">
+                <input class="form-control" name="owner_reply" maxlength="300"
+                       placeholder="Reply to finder, e.g. 'Thanks! I will meet you at the library entrance at 4 PM'"
+                       value="{{ r.owner_reply or '' }}" required>
+              </div>
+              <div class="col-12 col-md-3">
+                <button type="submit" class="btn btn-outline-primary w-100 touch-target-sm">
+                  <i class="bi bi-send me-1"></i> Send Reply
+                </button>
+              </div>
+            </form>
+
+            <form method="post" action="{{ url_for('reports.recover', report_id=r.id) }}" class="mt-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-success btn-sm px-3 py-1.5 shadow-sm">
+                <i class="bi bi-check-circle me-1"></i> Mark Card as Recovered
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <div class="alert alert-success d-flex align-items-center mb-0 py-2 px-3">
+            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
+            <div>
+              <strong>Card successfully recovered!</strong>
+              {% if r.owner_reply %}
+                <span class="d-block small text-muted">Last reply sent: "{{ r.owner_reply }}"</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 {% endblock %}
