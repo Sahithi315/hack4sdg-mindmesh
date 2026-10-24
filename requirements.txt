@@ -7,3 +7,4 @@ qrcode[pil]>=7.4
 python-dotenv>=1.0
 gunicorn>=21.2
 psycopg2-binary
+psycopg[binary]
